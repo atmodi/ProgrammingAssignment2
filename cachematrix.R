@@ -1,15 +1,61 @@
-## Put comments here that give an overall description of what your
-## functions do
 
-## Write a short comment describing this function
+##  solve() to calculate the inverse of matrix
 
+##
+## Demo Example: 
+##    > mymatrix <- matrix(c(1,2,3,4,5,6,7,8,9), nrow=3, ncol=3)
+##    > mcm <- makeCacheMatrix(mymatrix)
+##    > cacheSolve(mcm)
+##    .... outputs inverse(not from cache)...
+##    > cacheSolve(mcm)
+##    .... outputs inverse from cache ...
+
+## Creates a special "Matrix" which is really a list
+##  contains a function to:
 makeCacheMatrix <- function(x = matrix()) {
-
+  m <- NULL
+  
+  ### 1. set the value of the matrix
+  set <- function(y) {
+    x <<- y
+    m <<- NULL
+  }
+  
+  ### 2. get the value of the matrix
+  get <- function() x
+  
+  ### 3. set the value of the inverse of the matrix
+  setsolve <- function(solve) m <<- solve
+  
+  ### 4. get the value of the inverse of the matrix
+  getsolve <- function() m
+  
+  # return our list
+  list(set = set, get = get,
+       setsolve = setsolve,
+       getsolve = getsolve)
 }
 
-
-## Write a short comment describing this function
-
+## Given a makeCacheMatrix object, returns the inverse 
+##   of the matrix
+##
+##  USAGE: cacheSolve(x, ...) - where 'x' is a
+##         'makeCacheMatrix' object
+##
+##  (if it doesn't exist in cache it calculates it
+##   and caches before returning)
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+  ## Return a matrix that is the inverse of 'x'
+  m <- x$getsolve() # retrieve from cache
+  
+  if(!is.null(m)) { # we got something...
+    message("getting cached data")
+    return(m)
+  }
+  
+  # cache isn't filled yet
+  data <- x$get()       # get it
+  m <- solve(data, ...) # solve it
+  x$setsolve(m)	      # set it
+  m		      # return it
 }
